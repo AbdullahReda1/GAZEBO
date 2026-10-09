@@ -1,0 +1,49 @@
+# ==============================================================================
+#  ROS 2 JAZZY & GAZEBO HARMONIC HANDOVER REPORT: METHOD 1 (GUI DRAG-IN)
+# ==============================================================================
+
+1. OVERVIEW & USE CASES
+-----------------------
+* Description: Interactively spawning models directly inside the running 
+  Gazebo simulation via user interface panels.
+* Recommended For: Rapid, boilerplate-free visual reviews or verifying asset 
+  rendering issues without launching terminal stacks.
+* Architectural Limit: Treat it strictly as a model viewer, NOT a production
+  workflow. It cannot scale, is non-repeatable, and cannot be scripted.
+
+2. DETAILED STEP-BY-STEP OPERATION
+-----------------------------------
+Step 1: Launch the Base Environment
+* Execute your simulation file with the real-time simulation flag active:
+  $ gz sim -r /mnt/ubuntu_data/ROS2/GAZEBO/01_world_model_sdf/my_world.sdf
+
+Step 2: Access the Resource Panel (Resource Spawner)
+* In Gazebo Harmonic, if the "Insert" icon is not on the top toolbar, go to 
+  the upper-right corner and click the Ellipsis Menu (three vertical dots).
+* Scroll through the plugins menu and click "Resource Spawner". This reveals 
+  the unified local asset and internet cloud repository deck.
+
+Step 3: Asset Targeting & Selection
+* Under the "Local resources" category, expand your target folder path (bound 
+  securely via the GZ_SIM_RESOURCE_PATH environment variable).
+* Single-click (Left-Click) on your target model asset (e.g., CoffeeTable).
+
+Step 4: Viewport Spawning
+* Move your mouse cursor into the 3D grid area; a ghost bounding outline of 
+  the targeted entity will actively float with the mouse pointer.
+* Left-click anywhere in the 3D scene to drop the model. Physics and gravity 
+  will instantly compute for the spawned entity.
+
+3. POST-SPAWN MANIPULATION & CUSTOMIZATION
+-------------------------------------------
+A. Adjusting Position & Orientation (Pose):
+* Digital Method: Select the spawned model's root item (e.g., box_0) inside 
+  the Entity Tree. Modify 'X (m)', 'Y (m)', and 'Z (m)' fields in the right panel.
+* Visual Tooling: Select the Translate icon (4 perpendicular arrows) or Rotate 
+  icon (circular arrow) on the top-left toolbar to move/turn the body via axis handles.
+
+B. Modifying Visual Properties (Color Dynamics):
+* Ogre2 requires altering BOTH parameters simultaneously under the Visual Entity:
+  1. Ambient: Controls base texture reflection inside shade or shadows.
+  2. Diffuse: Controls true face color under direct environment light sources (Sun).
+* Failure to match both variables causes distorted or blacked-out surface traits.

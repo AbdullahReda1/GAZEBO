@@ -1,4 +1,4 @@
-# info 1.md: Gazebo Harmonic Basics (World, Model, SDF)
+# Gazebo Harmonic Basics (World, Model, SDF)
 
 Session 1 of 7. This is a broad pass. Depth comes on later rounds.
 
