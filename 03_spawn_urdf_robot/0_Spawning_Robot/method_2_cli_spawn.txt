@@ -1,0 +1,40 @@
+ROS 2 Jazzy & Gazebo Harmonic - Spawning Workflow Reference
+============================================================
+Method 2: Command-Line Spawn (CLI)
+============================================================
+
+1. Core Architecture Node:
+   Package: ros_gz_sim
+   Node:    create
+   Purpose: Specialized ROS 2 node designed to request entity spawning inside 
+            an active Gazebo Harmonic simulator session via service calls.
+
+2. Syntax Styles & Arguments:
+   
+   A. File-Based Input (-file):
+      Command:
+      ros2 run ros_gz_sim create -file robot.urdf -name my_robot -x 0 -y 0 -z 2
+      
+      Mechanism:
+      - Points directly to a local file (.urdf or .sdf).
+      - Automatically passes raw URDF profiles through libsdformat's internal 
+        converter tool before pushing it to the simulator server.
+      - Eliminates the need for manual, external conversions by hand.
+
+   B. Topic-Based Input (-topic):
+      Command:
+      ros2 run ros_gz_sim create -topic robot_description -name my_robot
+      
+      Mechanism:
+      - Subscribes and reads the raw URDF robot description directly from a live ROS 2 topic.
+      - Typically fed from the active 'robot_state_publisher' node stream.
+      - Crucial for advanced setups requiring synchronization with RViz2 visualization 
+        and TF transform trees.
+
+3. Standard Verification Workflow:
+   - Terminal 1 (Launch Simulator):
+     gz sim empty.sdf
+   
+   - Terminal 2 (Execute CLI Spawn Node):
+     cd /mnt/ubuntu_data/ROS2/GAZEBO/03_spawn_urdf_robot/0_Spawning_Robot/
+     ros2 run ros_gz_sim create -file robot.urdf -name my_robot -x 0 -y 0 -z 2
