@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <sdf version="1.10">
     <world name="my_world">
-        <physics name="my_pysics" type="ignored">
+        <physics name="my_physics" type="ignored">
             <max_step_size>0.001</max_step_size>
             <real_time_factor>1.0</real_time_factor>
         </physics>
