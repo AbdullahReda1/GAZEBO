@@ -38,3 +38,9 @@ Target SensorROS 2 Message TypeGazebo Transport TypeDirection
 
 * **Observation:** The bridge natively populates frame_id fields following an explicit nested path scheme: my_robot/base_link/imu_sensor, my_robot/base_link/lidar_sensor, and my_robot/base_link/camera_sensor.
 * **Impact:** This natively sets up our coordinate stack for downstream navigation or SLAM (Nav2) packages, ensuring clear kinematic transforms back to the absolute center of mass.
+
+## 6. Sensor Visibility vs. Data Generation (Visual Body Separation)
+
+* **The Rule:** The `<sensor>` tag inside a `<gazebo>` block handles **only** the mathematical and data-generation pipelines (publishing topics, update rates, FOV). It does not generate any 3D geometry in the simulator window.
+* **The Symptom:** Sensors generate correct data arrays, but their physical mounts or housings are completely invisible in the Gazebo GUI.
+* **The Fix:** To make a sensor visible, you must explicitly model it as a standard URDF `<link>` with `<visual>` and `<collision>` geometries, attach it to the chassis via a fixed `<joint>`, and update the `<gazebo reference="...">` attribute to target this new specific link name.
