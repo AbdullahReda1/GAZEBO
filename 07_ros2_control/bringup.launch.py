@@ -1,8 +1,8 @@
 import os
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, RegisterEventHandler
-from launch_ros.actions import Node, SetParameter
+from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction
 from launch.event_handlers import OnProcessExit
+from launch_ros.actions import Node, SetParameter
 
 
 HERE        = os.path.dirname(os.path.realpath(__file__)    )
@@ -20,10 +20,20 @@ def generate_launch_description():
     with open(URDF, 'r') as f:
         robot_description = f.read()
 
-    spawn_traj = Node(
+    spawn_active = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['camera_trajectory_controller']
+        arguments=[
+            'joint_state_broadcaster',
+            'diff_drive_controller',
+            'camera_trajectory_controller',
+        ]
+    )
+
+    spawn_inactive = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['camera_pan_controller', '--inactive']
     )
 
     rqt_node = Node(
@@ -33,11 +43,16 @@ def generate_launch_description():
         output='screen'
     )
 
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', RVIZ] if os.path.exists(RVIZ) else [],
+        output='screen'
+    )
+
     return LaunchDescription([
-        SetParameter(
-            name='use_sim_time', 
-            value=True
-        ),
+        SetParameter(name='use_sim_time', value=True),
+
         ExecuteProcess(
             cmd=['gz', 'sim', '-r', WORLD],
             output='screen'
@@ -60,34 +75,22 @@ def generate_launch_description():
             arguments=['-topic', 'robot_description', '-name', 'myrobot', '-z', '0.3'],
             output='screen'
         ),
-        Node(
-            package='controller_manager',
-            executable='spawner',
-            arguments=['joint_state_broadcaster']
+
+        spawn_active,
+        spawn_inactive,
+
+        TimerAction(
+            period=6.0,
+            actions=[rviz_node]
         ),
-        Node(
-            package='controller_manager',
-            executable='spawner',
-            arguments=['diff_drive_controller']
-        ),
-        Node(
-            package='controller_manager',
-            executable='spawner',
-            arguments=['camera_pan_controller', '--inactive']
-        ),
-        spawn_traj,
+
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=spawn_traj,
+                target_action=spawn_active,
                 on_exit=[rqt_node],
             )
         ),
-        Node(
-            package="rviz2",
-            executable="rviz2",
-            output="screen",
-            arguments=['-d', RVIZ] if os.path.exists(RVIZ) else []
-        ),
+
         Node(
             package='teleop_twist_keyboard',
             executable='teleop_twist_keyboard',
